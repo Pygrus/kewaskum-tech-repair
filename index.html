@@ -1,0 +1,692 @@
+<title>Kewaskum Tech Repair — Launch Checklist</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+
+<style>
+/* Layout: sticky header, scrollable task list, filter bar */
+:root {
+  --bg: #f8f7f5;
+  --surface: #ffffff;
+  --surface2: #f0eff0;
+  --border: #e2e1df;
+  --fg: #1a1a1e;
+  --fg2: #5a5860;
+  --fg3: #9896a0;
+  --navy: #1a1a2e;
+  --navy-mid: #2d2d50;
+  --navy-light: #e8eaf6;
+  --accent: #3d5afe;
+  --anthony: #0d47a1;
+  --anthony-bg: #e3f0ff;
+  --brian: #1b5e20;
+  --brian-bg: #e6f4ea;
+  --both: #4a148c;
+  --both-bg: #f3e5f5;
+  --unassigned: #5a5860;
+  --unassigned-bg: #f0eff0;
+  --done-bg: #f5f5f5;
+  --done-fg: #aaaaaa;
+  --green: #2e7d32;
+  --amber: #e65100;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f0f14;
+    --surface: #1a1a24;
+    --surface2: #22222e;
+    --border: #2e2e3e;
+    --fg: #e8e8f0;
+    --fg2: #9896a8;
+    --fg3: #55546a;
+    --navy: #3f51b5;
+    --navy-mid: #5c6bc0;
+    --navy-light: #1a1f3c;
+    --accent: #7986cb;
+    --anthony: #90caf9;
+    --anthony-bg: #0d2040;
+    --brian: #a5d6a7;
+    --brian-bg: #0d2010;
+    --both: #ce93d8;
+    --both-bg: #250d35;
+    --unassigned: #9896a8;
+    --unassigned-bg: #22222e;
+    --done-bg: #111118;
+    --done-fg: #44444a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f0f14; --surface: #1a1a24; --surface2: #22222e; --border: #2e2e3e;
+  --fg: #e8e8f0; --fg2: #9896a8; --fg3: #55546a; --navy: #3f51b5;
+  --navy-mid: #5c6bc0; --navy-light: #1a1f3c; --accent: #7986cb;
+  --anthony: #90caf9; --anthony-bg: #0d2040;
+  --brian: #a5d6a7; --brian-bg: #0d2010;
+  --both: #ce93d8; --both-bg: #250d35;
+  --unassigned: #9896a8; --unassigned-bg: #22222e;
+  --done-bg: #111118; --done-fg: #44444a;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100%;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0;
+}
+
+/* ── Header ──────────────────────────────────────────── */
+.site-header {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 20;
+  background: var(--navy);
+  color: #fff;
+  padding: 14px 20px 10px;
+  margin-left: max(-16px, calc(-1 * env(safe-area-inset-left, 16px)));
+  margin-right: max(-16px, calc(-1 * env(safe-area-inset-right, 16px)));
+}
+.header-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.header-title { font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
+.header-sub { font-size: 11px; opacity: .65; margin-top: 1px; }
+.progress-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+.progress-bar-wrap { flex: 1; height: 5px; background: rgba(255,255,255,.18); border-radius: 3px; overflow: hidden; }
+.progress-bar { height: 100%; background: #69f0ae; border-radius: 3px; transition: width .4s ease; }
+.progress-label { font-size: 11px; opacity: .75; white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+/* ── Filters ──────────────────────────────────────────── */
+.filters {
+  position: sticky;
+  top: calc(env(safe-area-inset-top, 0px) + 72px);
+  z-index: 15;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  padding: 8px 0;
+  margin-left: max(-16px, calc(-1 * env(safe-area-inset-left, 16px)));
+  margin-right: max(-16px, calc(-1 * env(safe-area-inset-right, 16px)));
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.filter-row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.filter-btn {
+  padding: 4px 11px; border-radius: 20px; border: 1.5px solid var(--border);
+  background: var(--surface); color: var(--fg2); font-size: 12px; font-weight: 500;
+  cursor: pointer; transition: all .15s;
+}
+.filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+.filter-btn.active { background: var(--navy); border-color: var(--navy); color: #fff; }
+.filter-label { font-size: 11px; color: var(--fg3); margin-right: 2px; }
+.filter-sep { width: 1px; height: 18px; background: var(--border); margin: 0 2px; }
+
+/* ── Main ──────────────────────────────────────────── */
+.main { max-width: 820px; margin: 0 auto; padding-block: 20px; }
+
+/* ── Section ──────────────────────────────────────────── */
+.section { margin-bottom: 24px; }
+.section-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px;
+  background: var(--navy);
+  color: #fff;
+  border-radius: 8px 8px 0 0;
+  cursor: pointer;
+  user-select: none;
+}
+.section-num {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px; font-weight: 700; opacity: .6; letter-spacing: .5px;
+}
+.section-title { font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 600; flex: 1; }
+.section-count { font-size: 11px; opacity: .6; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.section-chevron { font-size: 10px; opacity: .5; transition: transform .2s; }
+.section.collapsed .section-chevron { transform: rotate(-90deg); }
+.section-body { border: 1px solid var(--border); border-top: none; border-radius: 0 0 8px 8px; overflow: hidden; }
+.section.collapsed .section-body { display: none; }
+
+/* ── Task row ──────────────────────────────────────────── */
+.task {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  transition: background .1s;
+}
+.task:last-child { border-bottom: none; }
+.task:hover { background: var(--surface2); }
+.task.done { background: var(--done-bg); }
+.task.hidden { display: none; }
+
+.task-check-col {
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 12px 0 12px 10px;
+}
+.task-check {
+  width: 18px; height: 18px; border-radius: 4px;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  cursor: pointer; flex-shrink: 0; margin-top: 1px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+}
+.task-check:hover { border-color: var(--accent); }
+.task.done .task-check { background: var(--green); border-color: var(--green); }
+.task-check-icon { font-size: 11px; color: #fff; display: none; }
+.task.done .task-check-icon { display: block; }
+
+.task-body { padding: 11px 10px 11px 8px; min-width: 0; }
+.task-name {
+  font-size: 13px; font-weight: 500; color: var(--fg); line-height: 1.4;
+  transition: color .15s;
+}
+.task.done .task-name { color: var(--done-fg); text-decoration: line-through; }
+.task-critical { font-size: 10px; font-weight: 600; color: var(--amber); letter-spacing: .3px; }
+.task-note {
+  font-size: 11.5px; color: var(--fg2); margin-top: 3px; line-height: 1.4;
+}
+.task.done .task-note { color: var(--done-fg); }
+.task-meta { display: flex; gap: 6px; align-items: center; margin-top: 5px; flex-wrap: wrap; }
+.task-deadline { font-size: 10.5px; color: var(--fg3); font-variant-numeric: tabular-nums; }
+
+.task-owner-col {
+  display: flex; align-items: flex-start;
+  padding: 11px 10px 11px 4px;
+}
+
+/* ── Owner pill selector ──────────────────────────────── */
+.owner-select {
+  position: relative;
+}
+.owner-pill {
+  display: flex; align-items: center; gap: 5px;
+  padding: 3px 9px 3px 7px;
+  border-radius: 20px; border: 1.5px solid transparent;
+  font-size: 11px; font-weight: 600;
+  cursor: pointer; white-space: nowrap;
+  transition: all .15s;
+  user-select: none;
+}
+.owner-pill:hover { opacity: .85; }
+.owner-pill.anthony { background: var(--anthony-bg); color: var(--anthony); border-color: var(--anthony); }
+.owner-pill.brian   { background: var(--brian-bg);   color: var(--brian);   border-color: var(--brian); }
+.owner-pill.both    { background: var(--both-bg);     color: var(--both);    border-color: var(--both); }
+.owner-pill.unassigned { background: var(--unassigned-bg); color: var(--unassigned); border-color: var(--border); }
+
+.owner-dropdown {
+  position: absolute; right: 0; top: calc(100% + 4px);
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,.12);
+  min-width: 140px; z-index: 100; overflow: hidden;
+  display: none;
+}
+.owner-dropdown.open { display: block; }
+.owner-opt {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px; cursor: pointer; font-size: 12px; font-weight: 500;
+  transition: background .1s;
+}
+.owner-opt:hover { background: var(--surface2); }
+.owner-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.dot-anthony { background: var(--anthony); }
+.dot-brian   { background: var(--brian); }
+.dot-both    { background: var(--both); }
+.dot-unassigned { background: var(--border); }
+
+/* ── Legend ──────────────────────────────────────────── */
+.legend {
+  display: flex; gap: 14px; flex-wrap: wrap; align-items: center;
+  margin-bottom: 16px; padding: 10px 14px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; font-size: 11px; color: var(--fg2);
+}
+.legend-item { display: flex; align-items: center; gap: 5px; }
+
+/* ── Empty state ──────────────────────────────────────── */
+.empty-msg {
+  text-align: center; padding: 24px 16px;
+  color: var(--fg3); font-size: 13px; display: none;
+}
+</style>
+
+<header class="site-header">
+  <div class="header-top">
+    <div>
+      <div class="header-title">Kewaskum Tech Repair</div>
+      <div class="header-sub">Pre-Opening Launch Checklist &nbsp;·&nbsp; Target: January 2027</div>
+    </div>
+  </div>
+  <div class="progress-row">
+    <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+    <div class="progress-label" id="progressLabel">0 / 0 done</div>
+  </div>
+</header>
+
+<div class="filters">
+  <div class="filter-row">
+    <span class="filter-label">Show:</span>
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="todo">To Do</button>
+    <button class="filter-btn" data-filter="done">Done</button>
+    <div class="filter-sep"></div>
+    <span class="filter-label">Owner:</span>
+    <button class="filter-btn" data-owner="anthony">Anthony</button>
+    <button class="filter-btn" data-owner="brian">Brian</button>
+    <button class="filter-btn" data-owner="both">Both</button>
+    <button class="filter-btn" data-owner="unassigned">Unassigned</button>
+  </div>
+</div>
+
+<div class="main">
+  <div class="legend">
+    <span>Click owner badge to reassign:</span>
+    <span class="legend-item"><span class="owner-dot dot-anthony"></span> Anthony</span>
+    <span class="legend-item"><span class="owner-dot dot-brian"></span> Brian</span>
+    <span class="legend-item"><span class="owner-dot dot-both"></span> Both</span>
+    <span class="legend-item"><span class="owner-dot dot-unassigned"></span> Unassigned</span>
+  </div>
+
+  <div id="sections"></div>
+  <div class="empty-msg" id="emptyMsg">No tasks match this filter.</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-app-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-database-compat.min.js"></script>
+<script>
+// ── Firebase init ────────────────────────────────────────────────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyCKP3-YgkD6HO8J1JjwUhrUY1Rjv89fkBI",
+  authDomain: "kewaskum-tech-repair.firebaseapp.com",
+  databaseURL: "https://kewaskum-tech-repair-default-rtdb.firebaseio.com",
+  projectId: "kewaskum-tech-repair",
+  storageBucket: "kewaskum-tech-repair.firebasestorage.app",
+  messagingSenderId: "383883274350",
+  appId: "1:383883274350:web:3dc0f77bda76403fe69e7f"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const checklistRef = db.ref('checklist');
+
+const SECTIONS = [
+  {
+    num: "01", title: "Legal & Business Formation",
+    tasks: [
+      { id:"l1", name:"Obtain EIN (Federal Employer ID)", note:"EIN already in hand — unblocks LLC, banking, and payroll.", deadline:"Done", owner:"anthony", critical:false, done:true },
+      { id:"l2", name:"Choose and confirm business name", note:"Search WI DFI name database first. Confirm domain is available.", deadline:"ASAP", owner:"both", critical:true },
+      { id:"l3", name:"Form Wisconsin LLC — file Articles of Organization with DFI", note:"$130 filing fee online at wdfi.org. Unblocks bank account, seller's permit, and contracts.", deadline:"ASAP", owner:"anthony", critical:true },
+      { id:"l4", name:"Draft Operating Agreement", note:"Defines ownership split, decision authority, profit distribution. Free template at SCORE.org. Critical before money moves.", deadline:"With LLC", owner:"anthony", critical:false },
+      { id:"l5", name:"Register WI Seller's Permit for sales tax", note:"Free at tap.revenue.wi.gov. Repair labor isn't taxed in WI; parts/products are.", deadline:"Before open", owner:"anthony", critical:true },
+      { id:"l6", name:"Open business checking account", note:"Need LLC docs + EIN. Consider Relay (no-fee online banking) or a local credit union.", deadline:"After LLC", owner:"anthony", critical:false },
+      { id:"l7", name:"Purchase domain name", note:"Namecheap or Google Domains, ~$12/yr. Lock it in as soon as the name is settled.", deadline:"ASAP after name", owner:"anthony", critical:false },
+      { id:"l8", name:"Consult accountant — bookkeeping method + quarterly taxes", note:"1-hour consult is worth it. Cash vs accrual, estimated tax schedule, payroll setup.", deadline:"Before open", owner:"anthony", critical:false },
+      { id:"l9", name:"Confirm Caleb and John are fully out — no ambiguity on ownership", note:"No shared liability going forward. Everything under new LLC. Needs to be explicit and documented.", deadline:"Before LLC", owner:"both", critical:true },
+    ]
+  },
+  {
+    num: "02", title: "Lease & Location",
+    tasks: [
+      { id:"ls1", name:"Brian talks to Caleb about lease assignment", note:"Goal: assign lease to new LLC, Caleb relieved of personal guaranty. Landlord approval required.", deadline:"ASAP", owner:"brian", critical:true },
+      { id:"ls2", name:"Review existing lease for assignment clause", note:"Know what it says before the landlord conversation. Look for assignment rights and consent requirements.", deadline:"Before landlord mtg", owner:"anthony", critical:false },
+      { id:"ls3", name:"Landlord meeting — present new LLC, get written approval", note:"Bring LLC docs and EIN. Confirm rent ($1,700), lease term remaining, and any build-out rules.", deadline:"After Caleb talk", owner:"both", critical:true },
+      { id:"ls4", name:"Execute lease assignment in writing", note:"Do not operate on a verbal agreement. New lease or formal assignment addendum signed by all parties.", deadline:"After approval", owner:"anthony", critical:false },
+      { id:"ls5", name:"Document current space condition (photos + inventory)", note:"Protects against security deposit disputes. Note all existing damage before taking over.", deadline:"Before takeover", owner:"anthony", critical:false },
+      { id:"ls6", name:"Negotiate any landlord allowances for build-out", note:"Lighting, counter changes, etc. Best leverage is at the lease transition point.", deadline:"During negotiation", owner:"anthony", critical:false },
+    ]
+  },
+  {
+    num: "03", title: "Insurance",
+    tasks: [
+      { id:"i1", name:"Get General Liability insurance quote", note:"Required by most landlords. ~$500–900/yr. Try Next Insurance (nextinsurance.com) for instant online quotes.", deadline:"Before open", owner:"anthony", critical:true },
+      { id:"i2", name:"Get Bailee's / Care Custody & Control (CCC) coverage", note:"Covers customer devices in your possession. Standard GL does NOT cover this. Add as a rider or inland marine policy. Essential for a repair shop.", deadline:"Before open", owner:"anthony", critical:true },
+      { id:"i3", name:"Bundle as Business Owner's Policy (BOP) if possible", note:"Combines GL + property/contents coverage. Covers your tools and inventory.", deadline:"Before open", owner:"anthony", critical:false },
+      { id:"i4", name:"Provide Certificate of Insurance (COI) to landlord", note:"Standard landlord requirement. Your insurer can issue a COI quickly after binding coverage.", deadline:"Before occupancy", owner:"anthony", critical:false },
+      { id:"i5", name:"Confirm Workers Comp situation for Brian", note:"WI requires WC for employees. If Brian is an LLC member, different rules apply. Confirm with accountant.", deadline:"Before payroll", owner:"anthony", critical:false },
+    ]
+  },
+  {
+    num: "04", title: "Space Build-Out & Equipment",
+    tasks: [
+      { id:"e1", name:"Clear out vape display cases and decide what to keep", note:"U-shaped display case layout doesn't fit a repair shop. Clear the floor plan first.", deadline:"Week 1", owner:"both", critical:false },
+      { id:"e2", name:"Finalize shop layout — repair area, counter, lobby", note:"Back room for active repairs, front counter for intake/checkout, minimal lobby.", deadline:"Week 1", owner:"anthony", critical:false },
+      { id:"e3", name:"Source and install customer service counter", note:"IKEA KALLAX + butcher block top is cheap and clean. Restaurant supply stores also have ready-made counters.", deadline:"Weeks 1–2", owner:"anthony", critical:false },
+      { id:"e4", name:"Set up repair workbenches in back room", note:"Existing steel workbenches can likely stay. Need ESD mats, power strips, and task lighting.", deadline:"Weeks 1–2", owner:"both", critical:false },
+      { id:"e5", name:"Install workbench lighting", note:"LED panel work lights or LED strips under shelf. 5000K daylight color temp works best for screen repair.", deadline:"Weeks 1–2", owner:"anthony", critical:false },
+      { id:"e6", name:"Install security cameras", note:"Cover counter and entrance at minimum. Protects against theft and false damage claims. Reolink or Lorex are cost-effective.", deadline:"Before open", owner:"anthony", critical:false },
+      { id:"e7", name:"Purchase starter repair tool kit (~$373–535)", note:"iFixit Pro Tech Toolkit as the base. See separate Equipment List PDF for full breakdown.", deadline:"Weeks 1–2", owner:"anthony", critical:true },
+      { id:"e8", name:"Source parts drawers / component organization", note:"Akro-Mils or Harbor Freight bin systems. Organize by device family and label clearly.", deadline:"Weeks 1–2", owner:"brian", critical:false },
+      { id:"e9", name:"Set up ESD-safe workstation with mat and wrist strap", note:"ESD damage is invisible and kills motherboards. Non-negotiable from day one.", deadline:"Before first repair", owner:"both", critical:true },
+      { id:"e10", name:"Get lockable storage cabinet for customer devices", note:"Keeps phones and laptops secure overnight. Any locking cabinet works.", deadline:"Before open", owner:"anthony", critical:false },
+      { id:"e11", name:"Designate and set up 3D printer area", note:"Prusa MK3S+ as primary once restored. Keep separate from repair dust.", deadline:"Weeks 2–3", owner:"anthony", critical:false },
+    ]
+  },
+  {
+    num: "05", title: "Software & Point of Sale",
+    tasks: [
+      { id:"s1", name:"Choose repair shop management software — RepairDesk or RepairShopr", note:"RepairDesk (~$50/mo) or RepairShopr (~$65/mo). Trial both. RepairDesk has a better UI. Tracks tickets, parts, invoicing.", deadline:"2 wks before open", owner:"anthony", critical:true },
+      { id:"s2", name:"Set up Square POS for in-person payments", note:"Square integrates with RepairDesk. Need Square reader ($49) for the counter. Already familiar from Kelly Greens.", deadline:"Before open", owner:"anthony", critical:true },
+      { id:"s3", name:"Configure service menu and pricing in repair software", note:"Screen replacement, battery, charging port, water damage diagnostic, PC tune-up, virus removal, data recovery.", deadline:"1 wk before open", owner:"both", critical:false },
+      { id:"s4", name:"Set up customer intake form / repair agreement template", note:"Authorizes repair, sets liability terms, covers pre-existing damage. RepairDesk has built-in templates.", deadline:"1 wk before open", owner:"anthony", critical:false },
+      { id:"s5", name:"Set up accounting software (Wave free or QuickBooks Simple)", note:"Wave is free and good for a small shop. Connects to your bank for transaction import.", deadline:"Before open", owner:"anthony", critical:false },
+      { id:"s6", name:"Set up business email address (name@yourdomain.com)", note:"Google Workspace is $6/mo. Use for all business communication from day one.", deadline:"After domain purchase", owner:"anthony", critical:false },
+    ]
+  },
+  {
+    num: "06", title: "Marketing & Online Presence",
+    tasks: [
+      { id:"m1", name:"Claim and set up Google Business Profile", note:"Single highest-impact marketing action. Set up at business.google.com. Verification takes ~5 days.", deadline:"1 wk before open", owner:"brian", critical:true },
+      { id:"m2", name:"Build website (Squarespace recommended)", note:"Squarespace $16/mo. Keep it simple: Home, Services + Pricing, About, Contact. Connect to domain.", deadline:"2 wks before open", owner:"anthony", critical:true },
+      { id:"m3", name:"Design a logo", note:"Canva has a logo maker, or use Fiverr for a custom logo ($20–50). Keep it simple and legible at small sizes.", deadline:"After name decision", owner:"anthony", critical:false },
+      { id:"m4", name:"Create Facebook Business Page", note:"Kewaskum community is active on Facebook. Post repair tips, before/after photos, promotions.", deadline:"1 wk before open", owner:"brian", critical:false },
+      { id:"m5", name:"Create Instagram account", note:"Short-form content and before/after repair photos. Cross-post from Facebook. Good for younger customers.", deadline:"1 wk before open", owner:"brian", critical:false },
+      { id:"m6", name:"Post opening announcement on Nextdoor", note:"Hyperlocal and very effective in small towns. Announce the shop to the neighborhood.", deadline:"Opening week", owner:"brian", critical:false },
+      { id:"m7", name:"Claim Yelp listing", note:"Claim at biz.yelp.com. Add photos, hours, services. Some customers go here first.", deadline:"Before open", owner:"brian", critical:false },
+      { id:"m8", name:"Set up Canva account for graphics", note:"Free tier is enough for social posts, flyers, and promotions. Keep consistent with brand colors/logo.", deadline:"Before open", owner:"brian", critical:false },
+      { id:"m9", name:"Print business cards", note:"Vistaprint, ~$20 for 500 cards. Include phone, website, 'Walk-ins Welcome', and services list on back.", deadline:"1 wk before open", owner:"anthony", critical:false },
+      { id:"m10", name:"Create opening promotion", note:"e.g. 10% off first repair for Kewaskum residents, or free diagnostic. Post across all channels.", deadline:"Opening week", owner:"both", critical:false },
+      { id:"m11", name:"Set up Google review QR code at counter", note:"Print a QR code that links directly to the Google review page. Ask every satisfied customer to scan it.", deadline:"Day of open", owner:"brian", critical:false },
+    ]
+  },
+  {
+    num: "07", title: "Staffing & Training",
+    tasks: [
+      { id:"t1", name:"Brian: Professor Messer CompTIA A+ Core 1 — Modules 1–3", note:"Free at professormesser.com. Foundational hardware/software knowledge. See Brian's Training Guide PDF.", deadline:"Before open", owner:"brian", critical:false },
+      { id:"t2", name:"Brian: iFixit guided teardowns — iPhone, Samsung, iPad (3+ models)", note:"iFixit.com/Guide. Work through at least 3 phone models. Practice on junk phones.", deadline:"Before open", owner:"brian", critical:false },
+      { id:"t3", name:"Amaya: iFixit physical repair track + REWA Technology micro-soldering intro", note:"See Amaya's Training Guide PDF. Can ramp in during first weeks of open.", deadline:"Before/after open", owner:"unassigned", critical:false },
+      { id:"t4", name:"Source 5–10 junk/broken phones for practice repairs", note:"eBay 'lot of broken phones' — $20–40 for a bag of cracked/dead units. Practice before touching customer devices.", deadline:"Before open", owner:"anthony", critical:false },
+      { id:"t5", name:"Write intake/diagnostic standard operating procedure (SOP)", note:"Written process: greet customer, intake form, photo device before accepting, quote turnaround time.", deadline:"1 wk before open", owner:"anthony", critical:false },
+      { id:"t6", name:"Write repair completion and QA checklist", note:"Test repaired device thoroughly before customer pickup. Per-job sign-off checklist for Brian.", deadline:"1 wk before open", owner:"anthony", critical:false },
+      { id:"t7", name:"Set customer communication standards", note:"How repairs are communicated (text/call), quote approval process, 'no fix no fee' or diagnostic fee policy. Post in shop.", deadline:"Before open", owner:"anthony", critical:false },
+      { id:"t8", name:"Set professionalism expectations with Brian — uniform, customer tone", note:"Polo/uniform policy, handling frustrated customers, phone etiquette. Address directly and early.", deadline:"Before open", owner:"anthony", critical:false },
+    ]
+  },
+  {
+    num: "08", title: "Finances & Launch",
+    tasks: [
+      { id:"f1", name:"Establish startup capital — confirm how much each partner contributes", note:"Est. startup needs: $373–535 tools + ~$3,400 rent deposit + ~$900 insurance + ~$600/yr software + misc. Budget $5,500–6,500 total.", deadline:"ASAP", owner:"both", critical:true },
+      { id:"f2", name:"Set monthly overhead budget", note:"Known: Rent $1,700 + insurance ~$75/mo + software ~$75/mo + utilities ~$150/mo. Total ~$2,000+/mo before payroll.", deadline:"Before open", owner:"anthony", critical:false },
+      { id:"f3", name:"Define Amaya's commission/payment arrangement", note:"Commission-based until volume justifies hourly. Document in writing.", deadline:"Before she starts", owner:"anthony", critical:false },
+      { id:"f4", name:"Define Brian's draw structure as LLC member", note:"LLC members take draws, not salaries. Confirm with accountant. Set expectations on when draws start.", deadline:"Before open", owner:"both", critical:false },
+      { id:"f5", name:"Set 90-day revenue goal and break-even target", note:"Break-even ~$2,000/mo in revenue. At avg $60/repair that's ~34 jobs/month (~8–9/week). Achievable with consistent marketing.", deadline:"Before open", owner:"anthony", critical:false },
+      { id:"f6", name:"Soft open with friends and family first", note:"1–2 days to work out kinks in the intake process before full public open.", deadline:"Opening week", owner:"both", critical:false },
+      { id:"f7", name:"Public open announcement — coordinate across all channels", note:"Facebook, Instagram, Nextdoor, Google Business, website banner. 'Now Open' posts.", deadline:"Opening day", owner:"both", critical:false },
+    ]
+  }
+];
+
+// ── State ───────────────────────────────────────────────────────────────────
+let state = {}; // id -> { done, owner }
+let firebaseReady = false;
+
+function seedDefaults() {
+  SECTIONS.forEach(sec => sec.tasks.forEach(t => {
+    if (!state[t.id]) state[t.id] = { done: t.done || false, owner: t.owner };
+  }));
+}
+
+function loadState() {
+  // Show defaults immediately while Firebase loads
+  seedDefaults();
+  renderAll();
+
+  // Subscribe to Firebase for real-time sync
+  checklistRef.on('value', snapshot => {
+    const data = snapshot.val();
+    if (data) {
+      // Merge Firebase data over defaults (Firebase is source of truth)
+      SECTIONS.forEach(sec => sec.tasks.forEach(t => {
+        state[t.id] = {
+          done: data[t.id]?.done ?? (t.done || false),
+          owner: data[t.id]?.owner ?? t.owner
+        };
+      }));
+    } else {
+      // First load — push defaults to Firebase
+      seedDefaults();
+      const initial = {};
+      SECTIONS.forEach(sec => sec.tasks.forEach(t => {
+        initial[t.id] = state[t.id];
+      }));
+      checklistRef.set(initial).catch(() => {});
+    }
+    firebaseReady = true;
+    renderAll();
+  }, err => {
+    // Firebase unavailable — fall back to localStorage
+    console.warn('Firebase unavailable, using localStorage', err);
+    try {
+      const saved = localStorage.getItem('ktr_checklist_v2');
+      if (saved) Object.assign(state, JSON.parse(saved));
+    } catch(e) {}
+    seedDefaults();
+    renderAll();
+  });
+}
+
+function saveState() {
+  if (firebaseReady) {
+    // Push full state to Firebase (real-time sync to Brian's device)
+    checklistRef.set(state).catch(() => {
+      // Fallback to localStorage if Firebase write fails
+      try { localStorage.setItem('ktr_checklist_v2', JSON.stringify(state)); } catch(e) {}
+    });
+  } else {
+    try { localStorage.setItem('ktr_checklist_v2', JSON.stringify(state)); } catch(e) {}
+  }
+}
+
+// ── Filter state ─────────────────────────────────────────────────────────────
+let activeFilter = 'all';
+let activeOwner = null;
+
+// ── Render ───────────────────────────────────────────────────────────────────
+function ownerLabel(o) {
+  if (o === 'anthony') return 'Anthony';
+  if (o === 'brian')   return 'Brian';
+  if (o === 'both')    return 'Both';
+  return 'Assign';
+}
+
+function taskVisible(id) {
+  const s = state[id];
+  const doneMatch = activeFilter === 'all' || (activeFilter === 'done' && s.done) || (activeFilter === 'todo' && !s.done);
+  const ownerMatch = !activeOwner || s.owner === activeOwner;
+  return doneMatch && ownerMatch;
+}
+
+function buildTask(t, secEl) {
+  const s = state[t.id];
+  const row = document.createElement('div');
+  row.className = 'task' + (s.done ? ' done' : '') + (taskVisible(t.id) ? '' : ' hidden');
+  row.dataset.id = t.id;
+
+  row.innerHTML = `
+    <div class="task-check-col">
+      <div class="task-check" data-check="${t.id}">
+        <span class="task-check-icon">✓</span>
+      </div>
+    </div>
+    <div class="task-body">
+      <div class="task-name">${t.critical ? '<span class="task-critical">⚑ CRITICAL PATH &nbsp;</span>' : ''}${t.name}</div>
+      ${t.note ? `<div class="task-note">${t.note}</div>` : ''}
+      <div class="task-meta">
+        <span class="task-deadline">🗓 ${t.deadline}</span>
+      </div>
+    </div>
+    <div class="task-owner-col">
+      <div class="owner-select" data-owner-id="${t.id}">
+        <div class="owner-pill ${s.owner}" data-toggle="${t.id}">
+          <span class="owner-dot dot-${s.owner}"></span>
+          <span>${ownerLabel(s.owner)}</span>
+          <span style="font-size:9px;opacity:.6">▾</span>
+        </div>
+        <div class="owner-dropdown" id="dd_${t.id}">
+          ${['anthony','brian','both','unassigned'].map(o => `
+            <div class="owner-opt" data-set-owner="${t.id}" data-val="${o}">
+              <span class="owner-dot dot-${o}"></span>
+              <span>${ownerLabel(o)}</span>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+  return row;
+}
+
+function renderAll() {
+  const container = document.getElementById('sections');
+  container.innerHTML = '';
+  SECTIONS.forEach(sec => {
+    const secEl = document.createElement('div');
+    secEl.className = 'section';
+    secEl.dataset.sec = sec.num;
+
+    const hdr = document.createElement('div');
+    hdr.className = 'section-header';
+    hdr.innerHTML = `<span class="section-num">${sec.num}</span><span class="section-title">${sec.title}</span><span class="section-count" id="sc_${sec.num}"></span><span class="section-chevron">▾</span>`;
+    hdr.addEventListener('click', () => {
+      secEl.classList.toggle('collapsed');
+    });
+    secEl.appendChild(hdr);
+
+    const body = document.createElement('div');
+    body.className = 'section-body';
+    sec.tasks.forEach(t => body.appendChild(buildTask(t, secEl)));
+    secEl.appendChild(body);
+    container.appendChild(secEl);
+  });
+  attachEvents();
+  updateProgress();
+  updateFilterVisibility();
+}
+
+function updateProgress() {
+  let total = 0, done = 0;
+  SECTIONS.forEach(sec => {
+    sec.tasks.forEach(t => {
+      total++;
+      if (state[t.id]?.done) done++;
+    });
+  });
+  const pct = total ? Math.round(done/total*100) : 0;
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = `${done} / ${total} done`;
+
+  // section counts
+  SECTIONS.forEach(sec => {
+    const el = document.getElementById(`sc_${sec.num}`);
+    if (!el) return;
+    const sdone = sec.tasks.filter(t => state[t.id]?.done).length;
+    el.textContent = `${sdone}/${sec.tasks.length}`;
+  });
+}
+
+function updateFilterVisibility() {
+  let anyVisible = false;
+  SECTIONS.forEach(sec => {
+    let secVisible = false;
+    const secEl = document.querySelector(`[data-sec="${sec.num}"]`);
+    if (!secEl) return;
+    sec.tasks.forEach(t => {
+      const row = secEl.querySelector(`[data-id="${t.id}"]`);
+      if (!row) return;
+      const vis = taskVisible(t.id);
+      row.classList.toggle('hidden', !vis);
+      if (vis) { secVisible = true; anyVisible = true; }
+    });
+    secEl.classList.toggle('hidden', !secVisible);
+  });
+  document.getElementById('emptyMsg').style.display = anyVisible ? 'none' : 'block';
+}
+
+function refreshTask(id) {
+  const s = state[id];
+  const row = document.querySelector(`[data-id="${id}"]`);
+  if (!row) return;
+  row.classList.toggle('done', s.done);
+  row.classList.toggle('hidden', !taskVisible(id));
+
+  const pill = row.querySelector(`.owner-pill[data-toggle="${id}"]`);
+  if (pill) {
+    pill.className = `owner-pill ${s.owner}`;
+    pill.innerHTML = `<span class="owner-dot dot-${s.owner}"></span><span>${ownerLabel(s.owner)}</span><span style="font-size:9px;opacity:.6">▾</span>`;
+    pill.dataset.toggle = id;
+  }
+}
+
+function attachEvents() {
+  // checkboxes
+  document.querySelectorAll('[data-check]').forEach(el => {
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      const id = el.dataset.check;
+      state[id].done = !state[id].done;
+      saveState();
+      refreshTask(id);
+      updateProgress();
+      updateFilterVisibility();
+    });
+  });
+
+  // owner toggles
+  document.querySelectorAll('[data-toggle]').forEach(el => {
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      const id = el.dataset.toggle;
+      closeAllDropdowns();
+      document.getElementById('dd_' + id)?.classList.add('open');
+    });
+  });
+
+  // owner options
+  document.querySelectorAll('[data-set-owner]').forEach(el => {
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      const id = el.dataset.setOwner;
+      const val = el.dataset.val;
+      state[id].owner = val;
+      saveState();
+      closeAllDropdowns();
+      refreshTask(id);
+      updateFilterVisibility();
+    });
+  });
+
+  document.addEventListener('click', closeAllDropdowns);
+}
+
+function closeAllDropdowns() {
+  document.querySelectorAll('.owner-dropdown.open').forEach(d => d.classList.remove('open'));
+}
+
+// ── Filter buttons ───────────────────────────────────────────────────────────
+document.querySelectorAll('.filter-btn[data-filter]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn[data-filter]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeFilter = btn.dataset.filter;
+    updateFilterVisibility();
+  });
+});
+
+document.querySelectorAll('.filter-btn[data-owner]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (activeOwner === btn.dataset.owner) {
+      btn.classList.remove('active');
+      activeOwner = null;
+    } else {
+      document.querySelectorAll('.filter-btn[data-owner]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeOwner = btn.dataset.owner;
+    }
+    updateFilterVisibility();
+  });
+});
+
+// ── Boot ─────────────────────────────────────────────────────────────────────
+loadState(); // renderAll() is called inside loadState() once Firebase responds
+</script>
