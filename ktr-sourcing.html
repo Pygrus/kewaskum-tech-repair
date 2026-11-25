@@ -1,0 +1,573 @@
+<title>KTR Sourcing Dashboard</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500&display=swap">
+
+<style>
+  :root {
+    --bg: #f7f8fa;
+    --bg-alt: #ffffff;
+    --fg: #1a1c1e;
+    --fg-muted: #5a6070;
+    --accent: #1d6fa4;
+    --accent-light: #e8f2f9;
+    --border: #e2e5ea;
+    --card-bg: #ffffff;
+    --tag-bg: #eef1f5;
+    --pill-on: #1d6fa4;
+    --pill-on-fg: #ffffff;
+    --pill-off: #eef1f5;
+    --pill-off-fg: #5a6070;
+    --badge-phone: #1d6fa4;
+    --badge-laptop: #2e7d4f;
+    --badge-pc: #7b4fa6;
+    --badge-console: #c0531a;
+    --badge-free: #5a8a1a;
+    --badge-mil: #444;
+    --badge-she: #666;
+    --new-dot: #22c55e;
+    --warn: #f59e0b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #10131a;
+      --bg-alt: #161b24;
+      --fg: #e4e8f0;
+      --fg-muted: #7a8498;
+      --accent: #4fa3d4;
+      --accent-light: #0d2030;
+      --border: #232a36;
+      --card-bg: #161b24;
+      --tag-bg: #1e2535;
+      --pill-on: #4fa3d4;
+      --pill-on-fg: #0d1a24;
+      --pill-off: #1e2535;
+      --pill-off-fg: #7a8498;
+      --badge-phone: #4fa3d4;
+      --badge-laptop: #4a9e6e;
+      --badge-pc: #9b6fd4;
+      --badge-console: #e07840;
+      --badge-free: #7ab030;
+      --badge-mil: #aaa;
+      --badge-she: #888;
+      --new-dot: #22c55e;
+      --warn: #f59e0b;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #10131a; --bg-alt: #161b24; --fg: #e4e8f0; --fg-muted: #7a8498;
+    --accent: #4fa3d4; --accent-light: #0d2030; --border: #232a36;
+    --card-bg: #161b24; --tag-bg: #1e2535; --pill-on: #4fa3d4; --pill-on-fg: #0d1a24;
+    --pill-off: #1e2535; --pill-off-fg: #7a8498; --badge-phone: #4fa3d4;
+    --badge-laptop: #4a9e6e; --badge-pc: #9b6fd4; --badge-console: #e07840;
+    --badge-free: #7ab030; --badge-mil: #aaa; --badge-she: #888;
+    --new-dot: #22c55e; --warn: #f59e0b; color-scheme: dark;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.9rem;
+    color: var(--fg);
+    background: var(--bg);
+    margin: 0;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--bg-alt);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 50;
+  }
+  body::before {
+    content: ""; position: fixed; inset: 0 0 auto;
+    height: env(safe-area-inset-top, 0px); z-index: 51;
+    background: var(--bg-alt);
+  }
+  .header-inner {
+    max-width: 1200px; margin: 0 auto;
+    padding-block: 0.75rem;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+  }
+  .header-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700; font-size: 1rem;
+    color: var(--fg); display: flex; align-items: center; gap: 0.5rem;
+    white-space: nowrap;
+  }
+  .header-title .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--new-dot); flex-shrink: 0;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .last-refresh { font-size: 0.75rem; color: var(--fg-muted); white-space: nowrap; }
+  .header-actions { margin-left: auto; display: flex; gap: 0.5rem; align-items: center; }
+  .btn-sm {
+    font-size: 0.8rem; font-weight: 600; padding: 0.35rem 0.8rem;
+    border-radius: 6px; border: 1px solid var(--border);
+    background: var(--bg); color: var(--fg); cursor: pointer;
+    transition: background 0.15s, border-color 0.15s; white-space: nowrap;
+  }
+  .btn-sm:hover { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+  .btn-primary-sm {
+    background: var(--accent); color: var(--pill-on-fg);
+    border-color: var(--accent);
+  }
+  .btn-primary-sm:hover { opacity: 0.9; color: var(--pill-on-fg); }
+
+  /* FILTER BAR */
+  .filter-bar {
+    background: var(--bg-alt);
+    border-bottom: 1px solid var(--border);
+    padding-block: 0.6rem;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  .filter-row {
+    max-width: 1200px; margin: 0 auto;
+    display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;
+  }
+  .filter-label {
+    font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--fg-muted);
+    white-space: nowrap; margin-right: 0.25rem;
+  }
+  .pill {
+    font-size: 0.78rem; font-weight: 600; padding: 0.3rem 0.75rem;
+    border-radius: 20px; border: none; cursor: pointer;
+    background: var(--pill-off); color: var(--pill-off-fg);
+    transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
+  }
+  .pill.on { background: var(--pill-on); color: var(--pill-on-fg); }
+  .divider { width: 1px; height: 20px; background: var(--border); margin: 0 0.25rem; flex-shrink: 0; }
+  .price-filter { display: flex; align-items: center; gap: 0.4rem; }
+  .price-filter label { font-size: 0.75rem; color: var(--fg-muted); white-space: nowrap; }
+  .price-input {
+    width: 70px; padding: 0.28rem 0.5rem; font-size: 0.8rem;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: var(--bg); color: var(--fg); outline: none;
+  }
+  .price-input:focus { border-color: var(--accent); }
+  .sort-select {
+    font-size: 0.78rem; padding: 0.3rem 0.5rem;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: var(--bg); color: var(--fg); outline: none; cursor: pointer;
+  }
+
+  /* QUICK LINKS */
+  .quick-links {
+    max-width: 1200px; margin: 0 auto;
+    padding-block: 0.75rem;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;
+  }
+  .quick-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-muted); }
+  .quick-link {
+    font-size: 0.75rem; font-weight: 500;
+    padding: 0.25rem 0.65rem; border-radius: 5px;
+    background: var(--tag-bg); color: var(--fg-muted);
+    text-decoration: none; transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
+  }
+  .quick-link:hover { background: var(--accent-light); color: var(--accent); }
+
+  /* MAIN */
+  .main {
+    max-width: 1200px; margin: 0 auto;
+    padding-block: 1rem;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+
+  /* STATS BAR */
+  .stats-bar {
+    display: flex; gap: 1rem; align-items: center;
+    margin-bottom: 1rem; flex-wrap: wrap;
+  }
+  .stat-chip {
+    font-size: 0.75rem; color: var(--fg-muted);
+  }
+  .stat-chip strong { color: var(--fg); font-weight: 600; }
+
+  /* LISTING CARDS */
+  .listings { display: flex; flex-direction: column; gap: 0.6rem; }
+
+  .listing-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.9rem 1rem;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.25rem 1rem;
+    align-items: start;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    text-decoration: none;
+    color: inherit;
+  }
+  .listing-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 2px 10px rgba(29,111,164,0.08);
+  }
+  .listing-card.is-new { border-left: 3px solid var(--new-dot); }
+
+  .listing-left { min-width: 0; }
+  .listing-right { text-align: right; flex-shrink: 0; }
+
+  .listing-title {
+    font-weight: 600; font-size: 0.9rem;
+    color: var(--fg); margin-bottom: 0.2rem;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .listing-card:hover .listing-title { color: var(--accent); }
+
+  .listing-meta {
+    display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center;
+    margin-bottom: 0.3rem;
+  }
+  .badge {
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 0.05em;
+    text-transform: uppercase; padding: 0.15rem 0.45rem;
+    border-radius: 4px; color: white; white-space: nowrap;
+  }
+  .badge-phone { background: var(--badge-phone); }
+  .badge-laptop { background: var(--badge-laptop); }
+  .badge-pc { background: var(--badge-pc); }
+  .badge-console { background: var(--badge-console); }
+  .badge-free { background: var(--badge-free); }
+  .badge-mil { background: var(--badge-mil); }
+  .badge-she { background: var(--badge-she); }
+  .badge-lot { background: var(--warn); }
+
+  .listing-desc {
+    font-size: 0.8rem; color: var(--fg-muted);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+
+  .listing-price {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700; font-size: 1.05rem; color: var(--fg);
+  }
+  .listing-price.free { color: var(--badge-free); }
+  .listing-time { font-size: 0.72rem; color: var(--fg-muted); margin-top: 0.15rem; }
+  .listing-new-badge {
+    font-size: 0.65rem; font-weight: 700; color: var(--new-dot);
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+
+  /* EMPTY / LOADING / ERROR */
+  .state-panel {
+    text-align: center; padding: 3rem 1rem; color: var(--fg-muted);
+  }
+  .state-panel h3 { font-family: 'Space Grotesk', sans-serif; color: var(--fg); margin-bottom: 0.5rem; }
+  .spinner {
+    width: 32px; height: 32px; border: 3px solid var(--border);
+    border-top-color: var(--accent); border-radius: 50%;
+    animation: spin 0.8s linear infinite; margin: 0 auto 1rem;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .error-note {
+    background: var(--accent-light); border: 1px solid var(--accent);
+    border-radius: 8px; padding: 0.75rem 1rem;
+    font-size: 0.8rem; color: var(--fg-muted); margin-bottom: 1rem;
+  }
+  .error-note strong { color: var(--accent); }
+
+  @media (max-width: 600px) {
+    .listing-card { grid-template-columns: 1fr; }
+    .listing-right { text-align: left; display: flex; gap: 0.75rem; align-items: baseline; }
+  }
+</style>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div class="header-title">
+      <span class="dot"></span>
+      KTR Sourcing
+    </div>
+    <span class="last-refresh" id="lastRefresh">Not loaded yet</span>
+    <div class="header-actions">
+      <button class="btn-sm" id="btnRefresh">Refresh</button>
+    </div>
+  </div>
+</header>
+
+<!-- FILTERS -->
+<div class="filter-bar">
+  <div class="filter-row">
+    <span class="filter-label">Category</span>
+    <button class="pill on" data-filter="cat" data-val="all">All</button>
+    <button class="pill" data-filter="cat" data-val="phone">Phones</button>
+    <button class="pill" data-filter="cat" data-val="laptop">Laptops</button>
+    <button class="pill" data-filter="cat" data-val="pc">PCs</button>
+    <button class="pill" data-filter="cat" data-val="console">Consoles</button>
+    <button class="pill" data-filter="cat" data-val="free">Free</button>
+
+    <span class="divider"></span>
+    <span class="filter-label">Market</span>
+    <button class="pill on" data-filter="market" data-val="all">Both</button>
+    <button class="pill" data-filter="market" data-val="milwaukee">Milwaukee</button>
+    <button class="pill" data-filter="market" data-val="sheboygan">Sheboygan</button>
+
+    <span class="divider"></span>
+    <span class="filter-label">Sort</span>
+    <select class="sort-select" id="sortSelect">
+      <option value="newest">Newest first</option>
+      <option value="price-asc">Price: low to high</option>
+      <option value="price-desc">Price: high to low</option>
+    </select>
+
+    <span class="divider"></span>
+    <div class="price-filter">
+      <label>Max $</label>
+      <input class="price-input" type="number" id="maxPrice" placeholder="Any" min="0" max="9999">
+    </div>
+  </div>
+</div>
+
+<!-- QUICK LINKS -->
+<div class="quick-links">
+  <span class="quick-label">Also check</span>
+  <a class="quick-link" href="https://www.facebook.com/marketplace/kewaskum/electronics" target="_blank">FB Marketplace</a>
+  <a class="quick-link" href="https://offerup.com/search/?q=broken+phone&location=Kewaskum%2C+WI&radius=30" target="_blank">OfferUp</a>
+  <a class="quick-link" href="https://www.ebay.com/sch/i.html?_nkw=broken+phone+lot&LH_ItemCondition=7000&_sop=10&_sadis=200" target="_blank">eBay (parts/not working)</a>
+  <a class="quick-link" href="https://swappa.com/buy/phones" target="_blank">Swappa</a>
+  <a class="quick-link" href="https://www.estatesales.net/WI.html" target="_blank">Estate Sales WI</a>
+  <a class="quick-link" href="https://www.auctionzip.com/auction-auctioneers/Wisconsin.html" target="_blank">AuctionZip WI</a>
+  <a class="quick-link" href="https://www.nextdoor.com" target="_blank">Nextdoor</a>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="stats-bar">
+    <span class="stat-chip" id="statTotal"></span>
+    <span class="stat-chip" id="statNew"></span>
+    <span class="stat-chip" id="statFiltered"></span>
+  </div>
+
+  <div id="errorNote" class="error-note" hidden>
+    <strong>Some feeds failed to load.</strong> rss2json.com has a 1,000 request/day free limit — if you're hitting that, wait a few hours and refresh. Quick links above always work as a fallback.
+  </div>
+
+  <div id="listingsContainer">
+    <div class="state-panel">
+      <div class="spinner"></div>
+      <p>Loading listings from Craigslist Milwaukee &amp; Sheboygan...</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---- CONFIG ----
+// rss2json.com converts RSS to JSON and handles CORS server-side (1000 req/day free)
+const RSS2JSON = 'https://api.rss2json.com/v1/api.json?rss_url=';
+
+const SEARCHES = [
+  // Milwaukee
+  { market: 'milwaukee', cat: 'phone',   label: 'Broken Phone',     url: 'https://milwaukee.craigslist.org/search/ela?query=broken+phone&max_price=300&format=rss' },
+  { market: 'milwaukee', cat: 'phone',   label: 'Cracked iPhone',   url: 'https://milwaukee.craigslist.org/search/ela?query=cracked+iphone&max_price=300&format=rss' },
+  { market: 'milwaukee', cat: 'phone',   label: 'Phone Lot',        url: 'https://milwaukee.craigslist.org/search/ela?query=phone+lot&max_price=500&format=rss' },
+  { market: 'milwaukee', cat: 'laptop',  label: 'Broken Laptop',    url: 'https://milwaukee.craigslist.org/search/ela?query=broken+laptop&max_price=400&format=rss' },
+  { market: 'milwaukee', cat: 'laptop',  label: 'Laptop Lot',       url: 'https://milwaukee.craigslist.org/search/ela?query=laptop+lot&max_price=600&format=rss' },
+  { market: 'milwaukee', cat: 'pc',      label: 'Desktop Parts',    url: 'https://milwaukee.craigslist.org/search/ela?query=desktop+computer+parts&max_price=300&format=rss' },
+  { market: 'milwaukee', cat: 'pc',      label: 'Computer Lot',     url: 'https://milwaukee.craigslist.org/search/ela?query=computer+lot&max_price=500&format=rss' },
+  { market: 'milwaukee', cat: 'console', label: 'Broken Console',   url: 'https://milwaukee.craigslist.org/search/ela?query=broken+console&max_price=300&format=rss' },
+  { market: 'milwaukee', cat: 'console', label: 'Xbox PS5 broken',  url: 'https://milwaukee.craigslist.org/search/ela?query=broken+xbox+ps5+nintendo&max_price=300&format=rss' },
+  { market: 'milwaukee', cat: 'free',    label: 'Free Electronics', url: 'https://milwaukee.craigslist.org/search/zip?query=electronics&format=rss' },
+  // Sheboygan
+  { market: 'sheboygan', cat: 'phone',   label: 'Broken Phone',     url: 'https://sheboygan.craigslist.org/search/ela?query=broken+phone&max_price=300&format=rss' },
+  { market: 'sheboygan', cat: 'phone',   label: 'Cracked iPhone',   url: 'https://sheboygan.craigslist.org/search/ela?query=cracked+iphone&max_price=300&format=rss' },
+  { market: 'sheboygan', cat: 'laptop',  label: 'Broken Laptop',    url: 'https://sheboygan.craigslist.org/search/ela?query=broken+laptop&max_price=400&format=rss' },
+  { market: 'sheboygan', cat: 'laptop',  label: 'Laptop Lot',       url: 'https://sheboygan.craigslist.org/search/ela?query=laptop+lot&max_price=600&format=rss' },
+  { market: 'sheboygan', cat: 'pc',      label: 'Computer Lot',     url: 'https://sheboygan.craigslist.org/search/ela?query=computer+lot&max_price=500&format=rss' },
+  { market: 'sheboygan', cat: 'console', label: 'Broken Console',   url: 'https://sheboygan.craigslist.org/search/ela?query=broken+console&max_price=300&format=rss' },
+  { market: 'sheboygan', cat: 'free',    label: 'Free Electronics', url: 'https://sheboygan.craigslist.org/search/zip?query=electronics&format=rss' },
+];
+
+// ---- STATE ----
+let allItems = [];
+let filters = { cat: 'all', market: 'all' };
+let maxPrice = null;
+let sortMode = 'newest';
+const seenIds = new Set();
+try { const s = localStorage.getItem('ktr_seen'); if (s) JSON.parse(s).forEach(id => seenIds.add(id)); } catch(e) {}
+
+// ---- HELPERS ----
+function parsePrice(text) {
+  const m = (text || '').match(/\$?([\d,]+)/);
+  return m ? parseInt(m[1].replace(/,/g,'')) : null;
+}
+function timeAgo(date) {
+  const diff = (Date.now() - date) / 1000;
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return Math.floor(diff/60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff/3600) + 'h ago';
+  return Math.floor(diff/86400) + 'd ago';
+}
+function isNew(date) { return (Date.now() - date) < 24 * 60 * 60 * 1000; }
+function dedup(items) {
+  const seen = new Map();
+  for (const item of items) {
+    const key = item.title.toLowerCase().trim();
+    if (!seen.has(key)) seen.set(key, item);
+  }
+  return [...seen.values()];
+}
+
+// ---- RSS FETCH via rss2json.com ----
+async function fetchFeed(search) {
+  const url = RSS2JSON + encodeURIComponent(search.url);
+  const resp = await fetch(url);
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+  const json = await resp.json();
+  if (json.status !== 'ok') throw new Error(json.message || 'rss2json error');
+  return (json.items || []).map(item => {
+    const title = (item.title || '').trim();
+    const link = item.link || item.guid || '';
+    const desc = (item.description || item.content || '').replace(/<[^>]+>/g, '').trim();
+    const pubDate = item.pubDate;
+    const price = parsePrice(title) || parsePrice(desc);
+    const date = pubDate ? new Date(pubDate) : new Date(0);
+    const id = link || title;
+    return { title, link, desc, price, date, cat: search.cat, market: search.market, label: search.label, id };
+  });
+}
+
+// ---- RENDER ----
+function catBadgeClass(cat) {
+  return { phone:'badge-phone', laptop:'badge-laptop', pc:'badge-pc', console:'badge-console', free:'badge-free' }[cat] || '';
+}
+function catLabel(cat) {
+  return { phone:'Phone', laptop:'Laptop', pc:'PC', console:'Console', free:'Free' }[cat] || cat;
+}
+function marketBadgeClass(m) { return m === 'milwaukee' ? 'badge-mil' : 'badge-she'; }
+function marketLabel(m) { return m === 'milwaukee' ? 'Milwaukee' : 'Sheboygan'; }
+
+function renderListings() {
+  let items = [...allItems];
+
+  // Filter
+  if (filters.cat !== 'all') items = items.filter(i => i.cat === filters.cat);
+  if (filters.market !== 'all') items = items.filter(i => i.market === filters.market);
+  if (maxPrice !== null) items = items.filter(i => i.price === null || i.price <= maxPrice);
+
+  // Sort
+  if (sortMode === 'newest') items.sort((a,b) => b.date - a.date);
+  else if (sortMode === 'price-asc') items.sort((a,b) => (a.price ?? 99999) - (b.price ?? 99999));
+  else if (sortMode === 'price-desc') items.sort((a,b) => (b.price ?? -1) - (a.price ?? -1));
+
+  const newCount = allItems.filter(i => isNew(i.date) && !seenIds.has(i.id)).length;
+  document.getElementById('statTotal').innerHTML = `<strong>${allItems.length}</strong> total listings`;
+  document.getElementById('statNew').innerHTML = newCount > 0 ? `<strong style="color:var(--new-dot)">${newCount} new</strong> in last 24h` : '';
+  document.getElementById('statFiltered').innerHTML = items.length !== allItems.length ? `<strong>${items.length}</strong> shown after filters` : '';
+
+  const container = document.getElementById('listingsContainer');
+  if (items.length === 0) {
+    container.innerHTML = `<div class="state-panel"><h3>No listings match</h3><p>Try adjusting your filters or raising the max price.</p></div>`;
+    return;
+  }
+
+  container.innerHTML = '';
+  const frag = document.createDocumentFragment();
+  const listDiv = document.createElement('div');
+  listDiv.className = 'listings';
+
+  items.forEach(item => {
+    const novel = !seenIds.has(item.id);
+    const card = document.createElement('a');
+    card.className = 'listing-card' + (novel && isNew(item.date) ? ' is-new' : '');
+    card.href = item.link;
+    card.target = '_blank';
+    card.rel = 'noopener noreferrer';
+
+    const priceStr = item.cat === 'free' || item.price === 0
+      ? '<span class="listing-price free">FREE</span>'
+      : item.price != null
+        ? `<span class="listing-price">$${item.price.toLocaleString()}</span>`
+        : '<span class="listing-price" style="color:var(--fg-muted);font-size:0.8rem">Price N/A</span>';
+
+    card.innerHTML = `
+      <div class="listing-left">
+        <div class="listing-title">${item.title}</div>
+        <div class="listing-meta">
+          <span class="badge ${catBadgeClass(item.cat)}">${catLabel(item.cat)}</span>
+          <span class="badge ${marketBadgeClass(item.market)}">${marketLabel(item.market)}</span>
+          ${item.title.toLowerCase().includes('lot') ? '<span class="badge badge-lot">LOT</span>' : ''}
+        </div>
+        <div class="listing-desc">${item.desc.substring(0,120)}${item.desc.length > 120 ? '…' : ''}</div>
+      </div>
+      <div class="listing-right">
+        ${priceStr}
+        <div class="listing-time">${timeAgo(item.date)}</div>
+        ${novel && isNew(item.date) ? '<div class="listing-new-badge">New</div>' : ''}
+      </div>
+    `;
+    listDiv.appendChild(card);
+
+    // Mark as seen on click
+    card.addEventListener('click', () => {
+      seenIds.add(item.id);
+      try { localStorage.setItem('ktr_seen', JSON.stringify([...seenIds])); } catch(e) {}
+      card.classList.remove('is-new');
+    });
+  });
+
+  frag.appendChild(listDiv);
+  container.appendChild(frag);
+}
+
+// ---- LOAD ----
+async function loadAll() {
+  document.getElementById('listingsContainer').innerHTML = `<div class="state-panel"><div class="spinner"></div><p>Loading from Craigslist Milwaukee &amp; Sheboygan...</p></div>`;
+  document.getElementById('lastRefresh').textContent = 'Loading...';
+
+  const results = await Promise.allSettled(SEARCHES.map(s => fetchFeed(s)));
+  let raw = [];
+  let hadError = false;
+  results.forEach(r => {
+    if (r.status === 'fulfilled') raw = raw.concat(r.value);
+    else hadError = true;
+  });
+
+  if (hadError) document.getElementById('errorNote').hidden = false;
+
+  allItems = dedup(raw.filter(i => i.title && i.link));
+  document.getElementById('lastRefresh').textContent = 'Updated ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  renderListings();
+}
+
+// ---- EVENTS ----
+document.querySelectorAll('.pill[data-filter]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const group = btn.dataset.filter;
+    document.querySelectorAll(`.pill[data-filter="${group}"]`).forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+    filters[group] = btn.dataset.val;
+    renderListings();
+  });
+});
+
+document.getElementById('sortSelect').addEventListener('change', e => { sortMode = e.target.value; renderListings(); });
+
+document.getElementById('maxPrice').addEventListener('input', e => {
+  maxPrice = e.target.value ? parseInt(e.target.value) : null;
+  renderListings();
+});
+
+document.getElementById('btnRefresh').addEventListener('click', loadAll);
+
+// Auto-refresh every 15 minutes
+setInterval(loadAll, 15 * 60 * 1000);
+
+loadAll();
+</script>
